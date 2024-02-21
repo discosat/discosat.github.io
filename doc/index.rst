@@ -10,5 +10,5 @@ Welcome to Example's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   disco1.md
-   disco2.md
+   disco-1.md
+   disco-2.md

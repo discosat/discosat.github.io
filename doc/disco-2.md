@@ -1,4 +1,4 @@
-# Some feature
+# Disco 2
 
 ## Subsection
 

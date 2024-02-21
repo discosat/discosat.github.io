@@ -1,5 +1,5 @@
 =======
-DISCO 2
+Disco 2
 =======
 
 .. toctree::

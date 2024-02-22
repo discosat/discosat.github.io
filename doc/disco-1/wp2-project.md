@@ -1,4 +1,4 @@
-#WP2 Project
+# WP2 Project
 
 ## Timeline
 First this then that

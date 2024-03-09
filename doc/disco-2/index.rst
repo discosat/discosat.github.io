@@ -3,8 +3,7 @@ Disco 2
 =======
 
 .. toctree::
-  wp0-project.md
-  wp1-payload.md
+  software/index.rst
 ..
   wp0_management.md
   wp10-science.md

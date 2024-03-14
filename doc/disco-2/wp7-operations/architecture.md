@@ -1,0 +1,3 @@
+# System architecture
+
+The operations system consists of multiple interacting services...

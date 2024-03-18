@@ -10,5 +10,4 @@ Discosat Documentation
    :maxdepth: 3
    :caption: Contents:
 
-   disco-1/index.rst
    disco-2/index.rst

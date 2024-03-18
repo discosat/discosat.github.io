@@ -8,9 +8,9 @@ The image processing pipeline and the camera communicate though the use of [Syst
 ```c
 // Example buffer containing image data
 unsigned char buffer[] = {
-    5, 0, 0, 0, 'i', 'm', 'a', 'g', 'e',     // 4 bits allocated for the size of the first image, followed by image data
-    3, 0, 0, 0, 'f', 'o', 'o',               // 4 bits allocated for the size the second image, followed by image data
-    6, 0, 0, 0, 'b', 'a', 'r', 'b', 'a', 'z' // 4 bits allocated for the size the third image, followed by image data
+    0, 0, 0, 5, 'i', 'm', 'a', 'g', 'e',     // 4 bits allocated for the size of the first image, followed by image data
+    0, 0, 0, 3, 'f', 'o', 'o',               // 4 bits allocated for the size the second image, followed by image data
+    0, 0, 0, 6, 'b', 'a', 'r', 'b', 'a', 'z' // 4 bits allocated for the size the third image, followed by image data
 };
 ```
 

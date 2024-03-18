@@ -39,9 +39,8 @@ The pipeline and the modules are configured through CSP where configurations are
 
 An overview of how the module execution and configuration takes place, and how the pipeline interacts with the camera, can be seen in the following diagram:
 
-<p align="center">
-  <img src="img/pipeline_diagram.png" alt="Pipeline Software Architecture" width="800">
-</p>
+![Pipeline Software Architecture](img/pipeline_diagram.png)
+*Software architecture diagram of the DISCO-2 image processing pipeline. This diagram illustrates a scenario with example image processing modules and configurations. The diagram showcases how the pipeline interacts with the camera through shared memory and a System V Message Queue.*
 
 ## Configuring the Pipeline
 Setting up DIPP involves defining the sequence and parameters of processing modules. Configuration can be performed remotely to tailor the pipeline to specific project requirements without direct access to the deployment environment. Two primary functions (`ippc pipeline [options] <pipeline-idx> <config-file>` and `ippc module [options] <module-idx> <config-file>`) are introduced as CSH extensions that enables the reconfiguration of the pipeline and individual modules. The source code and setup for the pipeline CSH extension are available on [github.com/Lindharden/csp_ippc](https://github.com/Lindharden/csp_ippc). The two commands are described in more detail in [Command 1](#command-1-ippc-pipeline) and [Command 2](#command-2-ippc-module)

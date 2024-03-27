@@ -59,3 +59,20 @@ The possible values that can be set are the following.
 
 ## Building
 The Camera controller is built with the Meson build system. A build script is included in the [github repository](https://github.com/ivaroli/DiscoCameraController). Simply call `./configure.sh` and the controller will be built.
+
+## Error log
+The camera controller provides an integer parameter via the CSP parameter named error_log, denoting the latest cause of failure encountered during image capture. Refer to the table below for the list of potential error codes along with their respective explanations.
+
+| Error Code | Description                                               |
+|------------|-----------------------------------------------------------|
+| 0          | Success                                                   |
+| 100        | General error in parsing of capture instructions          |
+| 101        | Invalid camera type or camera type implementation missing |
+| 102        | CAMERA_ID is missing from capture instructions            |
+| 103        | NUM_IMAGES to capture is 0                                |
+| 200        | General error during image capture                        |
+| 201        | No cameras connected or found                             |
+| 202        | Camera with id CAMERA_ID not found                        |
+| 300        | General error in message queue                            |
+| 301        | Unable to create shared memory space                      |
+| 302        | Unable to insert data into memory space                   |

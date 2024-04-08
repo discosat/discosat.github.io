@@ -35,7 +35,7 @@ Below is a sequence diagram illustrating the entire process of capturing images 
 ### Visible light sensor data
 The camera controller captures raw data from the visible light image sensors in a BayerRG format with a 12-bit pixel depth. In this format, every two bytes in the image data represent a single R, G, or B pixel. This approach is taken to grant the image processing pipeline greater control over image processing. Below is a visual representation of the BayerRG pixel format.
 
-![Sequecne diagram of capturing images and delivering them to the processing pipeline](img/pixel-formats-raw.png)
+![Sequence diagram of capturing images and delivering them to the processing pipeline](img/pixel-formats-raw.png)
 
 ### IR light sensor data
 **Undecided**
@@ -44,14 +44,15 @@ The camera controller captures raw data from the visible light image sensors in 
 The camera controller exposes a CSP parameter through [libparam](https://github.com/spaceinventor/libparam), called `capture_param`. This parameter is a semi-colon seperated string of values describing the image capture. An example of a CSH command setting this parameter is below:
 
 ```
-set capture_param "CAMERA=1800 U-2040c;NUM\_IMAGES=10;EXPOSURE=55000;ISO=0;"
+set capture_param "CAMERA_TYPE=VMB;CAMERA_ID=1800 U-2040c;NUM_IMAGES=10;EXPOSURE=55000;ISO=0;INTERVAL=55000;"
 ```
 
 The possible values that can be set are the following.
 
 |        Name |        Type |        Example |        Description                                            |        Required |        Default                         |
 |-------------|-------------|----------------|---------------------------------------------------------------|-----------------|----------------------------------------|
-| CAMERA      | string      | 1800 U-2040c   | The model of the camera to capture with                       | True            | N/A                                    |
+| CAMERA_ID   | string      | 1800 U-2040c   | The model of the camera to capture with                       | True            | N/A                                    |
+| CAMERA_TYPE | string      | VMB            | The camera type to capture with                               | FALSE           | VMB                                    |
 | EXPOSURE    | int         | 55000          | Exposure in microseconds                                      | False           | If not set, then exposure is estimated |
 | ISO         | double      | 1.0            | ISO or gain                                                   | False           | 1                                      |
 | NUM_IMAGES  | int         | 10             | Number of images to capture                                   | False           | 1                                      |

@@ -9,7 +9,10 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code (including submodules)
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - uses: actions/setup-python@v3
       - name: Install dependencies
         run: |

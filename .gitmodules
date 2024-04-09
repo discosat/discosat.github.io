@@ -1,0 +1,3 @@
+[submodule "doc/disco-2/sub-docs/csp_proc"]
+	path = doc/disco-2/sub-docs/csp_proc
+	url = https://github.com/discosat/csp_proc.git

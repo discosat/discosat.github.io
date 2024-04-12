@@ -1,4 +1,4 @@
-# Getting started
+# System setup
 The camera control software, image processing pipeline and scheduler run on a [PicoCore™MX8MP](https://fs-net.de/en/embedded-modules/computer-on-module-picocore/picocoremx8mp-nxp-imx8m-plus-cpu/) computer on module (CoM). The source code and build setup as well as compiled binaries _(WIP but will be attached as a GitHub release)_ for the system image etc. are available on [https://github.com/discosat/disco-ii-picocore-mx8mp-yocto](https://github.com/discosat/disco-ii-picocore-mx8mp-yocto).
 
 ## Serial connection to the CoM

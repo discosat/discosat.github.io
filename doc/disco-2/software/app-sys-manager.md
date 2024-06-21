@@ -21,6 +21,8 @@ The `app-sys-manager` can be used for various tasks such as:
 - Rebooting PicoCoreMX8MP
   - run `reboot` command (affects Cortex-M7 application as well). This uses the default CSP reboot hook.
 
+![Primary operation sequence diagram](img/primary_operation_sequence_diagram.drawio.png)
+*Conceptual overview of the primary operation sequence*
 
 ## Payload Nodes in the CSP network
 When the system is fully up and running, the PicoCoreMX8MP will contain the following nodes in the CSP network:

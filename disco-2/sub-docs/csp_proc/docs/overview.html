@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>csp_proc &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Disco 2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">csp_proc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/disco-2/sub-docs/csp_proc/docs/overview.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="csp-proc">
+<h1>csp_proc<a class="headerlink" href="#csp-proc" title="Link to this heading"></a></h1>
+<p>Lightweight, programmable procedures with a libcsp- and libparam-native runtime. This provides remote control of libparam-based coordination between nodes in a CSP network, essentially exposing the network as single programmable unit.</p>
+<p>The library has a relatively small footprint suitable for microcontrollers, requiring no external libraries other than libcsp and libparam themselves for the core of the library. As of writing, the library provides 2 default runtime implementations which depend on FreeRTOS and POSIX respectively. See also <a class="reference internal" href="usage_examples/index.html"><span class="std std-doc">usage examples</span></a> for a demonstration of the commands available in the DSL.</p>
+<section id="dsl-overview">
+<h2>DSL Overview<a class="headerlink" href="#dsl-overview" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> provides a set of slash commands that allow users to create, manage, and execute procedures on a given CSP node. The procedures facilitate control-flow and arithmetic operations while remaining small - usually on the order of hundreds of bytes! The runtime is detached from the DSL, allowing customizations, and there is support for pre-programmed, complex procedures on the native platform in reserved procedure slots. The following is a list of commands available in the DSL:</p>
+<section id="procedure-management-commands">
+<h3>Procedure Management Commands<a class="headerlink" href="#procedure-management-commands" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">new</span></code>: Creates a new procedure and sets it as the active procedure context.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">del</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Deletes the procedure in the specified slot (0-255) on the node. Note that some slots may be reserved for predefined procedures.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">pull</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Switches the active procedure context to the procedure pulled from the specified slot (0-255) on the node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">push</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Pushes the active procedure to the specified slot on the node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">size</span></code>: Returns the size (in bytes) of the active procedure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">pop</span> <span class="pre">[instruction</span> <span class="pre">index]</span></code>: Removes the instruction at the specified index (defaults to the latest instruction) in the active procedure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">list</span></code>: Lists the instructions in the active procedure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">slots</span> <span class="pre">[node]</span></code>: Lists the occupied procedure slots on the node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">run</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Executes the procedure in the specified slot.</p></li>
+</ul>
+</section>
+<section id="control-flow-and-arithmetic-operations">
+<h3>Control-Flow and Arithmetic Operations<a class="headerlink" href="#control-flow-and-arithmetic-operations" title="Link to this heading"></a></h3>
+<p>The following commands allow the user to program control-flow and arithmetic operations within procedures. The result is always a libparam parameter stored on the node hosting the corresponding procedure server (node 0 from its perspective) and <code class="docutils literal notranslate"><span class="pre">[node]</span></code> is the node on which the operands are located - Except when using the <code class="docutils literal notranslate"><span class="pre">rmt</span></code> unop operation, where it’s switched!</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">block</span> <span class="pre">&lt;param</span> <span class="pre">a&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;param</span> <span class="pre">b&gt;</span> <span class="pre">[node]</span></code>: Blocks execution of the procedure until the specified condition is met. <code class="docutils literal notranslate"><span class="pre">&lt;op&gt;</span></code> can be one of: <code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">!=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">ifelse</span> <span class="pre">&lt;param</span> <span class="pre">a&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;param</span> <span class="pre">b&gt;</span> <span class="pre">[node]</span></code>: Skips the next instruction if the condition is not met, and the following instruction if it is met. This command cannot be nested in the default runtime - i.e. it cannot be used again within the following 2 instructions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">noop</span></code>: Performs no operation. Useful in combination with <code class="docutils literal notranslate"><span class="pre">ifelse</span></code> instructions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">set</span> <span class="pre">&lt;param&gt;</span> <span class="pre">&lt;value&gt;</span> <span class="pre">[node]</span></code>: Sets the value of a parameter. The type of value is always inferred from the libparam type of the parameter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">unop</span> <span class="pre">&lt;param&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;result&gt;</span> <span class="pre">[node]</span></code>: Applies a unary operator to a parameter and stores the result. <code class="docutils literal notranslate"><span class="pre">&lt;op&gt;</span></code> can be one of: <code class="docutils literal notranslate"><span class="pre">++</span></code>, <code class="docutils literal notranslate"><span class="pre">--</span></code>, <code class="docutils literal notranslate"><span class="pre">!</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">idt</span></code>, <code class="docutils literal notranslate"><span class="pre">rmt</span></code>. <code class="docutils literal notranslate"><span class="pre">idt</span></code> and <code class="docutils literal notranslate"><span class="pre">rmt</span></code> are both identity operators.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">binop</span> <span class="pre">&lt;param</span> <span class="pre">a&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;param</span> <span class="pre">b&gt;</span> <span class="pre">&lt;result&gt;</span> <span class="pre">[node]</span></code>: Applies a binary operator to parameters <code class="docutils literal notranslate"><span class="pre">&lt;param</span> <span class="pre">a&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;param</span> <span class="pre">b&gt;</span></code> and stores the result. <code class="docutils literal notranslate"><span class="pre">&lt;op&gt;</span></code> can be one of: <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">%</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">call</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Inserts an instruction to run the procedure in the specified slot.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup csp_proc &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Disco 2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Setup <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/disco-2/sub-docs/csp_proc/docs/setup.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="setup-csp-proc">
+<h1>Setup <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code><a class="headerlink" href="#setup-csp-proc" title="Link to this heading"></a></h1>
+<p>The easiest way to integrate <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> is with <a class="reference external" href="https://mesonbuild.com/">meson</a>. As of writing, no other build systems are supported out-of-the-box, so you’ll have to get creative if using meson is not an option. See below for an overview of the constituent parts of <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code>.</p>
+<p>The following demonstrates the outline of a <code class="docutils literal notranslate"><span class="pre">meson.build</span></code> file in a parent project where <code class="docutils literal notranslate"><span class="pre">libcsp</span></code>, <code class="docutils literal notranslate"><span class="pre">libparam</span></code>, and <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> are present in the <code class="docutils literal notranslate"><span class="pre">lib</span></code> subdirectory:</p>
+<div class="highlight-meson notranslate"><div class="highlight"><pre><span></span><span class="nb">project</span><span class="p">(...,</span><span class="w"> </span><span class="n">subproject_dir</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;lib&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">default_options</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">	</span><span class="s">&#39;csp_proc:slash=false&#39;</span><span class="p">,</span>
+<span class="w">	</span><span class="s">&#39;csp_proc:freertos=false&#39;</span><span class="p">,</span>
+<span class="w">	</span><span class="s">&#39;csp_proc:posix=true&#39;</span><span class="p">,</span>
+<span class="w">	</span><span class="s">&#39;csp_proc:proc_runtime=true&#39;</span><span class="p">,</span>
+<span class="w">	</span><span class="s">&#39;csp_proc:RESERVED_PROC_SLOTS=...&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">])</span>
+
+<span class="n">deps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+<span class="n">deps</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">dependency</span><span class="p">(</span><span class="s">&#39;csp&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">fallback</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;libcsp&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;csp_dep&#39;</span><span class="p">])</span>
+<span class="n">deps</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">dependency</span><span class="p">(</span><span class="s">&#39;param&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">fallback</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;libparam&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;param_dep&#39;</span><span class="p">])</span>
+<span class="n">deps</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">dependency</span><span class="p">(</span><span class="s">&#39;csp_proc&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">fallback</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;csp_proc&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;csp_proc_dep&#39;</span><span class="p">]).</span><span class="n">as_link_whole</span><span class="p">()</span>
+
+<span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">executable</span><span class="p">(...</span>
+<span class="w">	</span><span class="n">dependencies</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">deps</span><span class="p">,</span>
+<span class="w">	</span><span class="p">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> is not a standalone library. The core part of the library depends on <code class="docutils literal notranslate"><span class="pre">libparam</span></code> and <code class="docutils literal notranslate"><span class="pre">libcsp</span></code>, while optional parts depend on <code class="docutils literal notranslate"><span class="pre">slash</span></code> and the FreeRTOS kernel or POSIX functionality. A reference setup can be found in the following <a class="reference external" href="https://github.com/discosat/csp_proc/blob/main/Dockerfile">Dockerfile</a>, which is the environment that’s used to run the automated tests in the CI pipeline.</p>
+<section id="composition-of-the-library">
+<h2>Composition of the library<a class="headerlink" href="#composition-of-the-library" title="Link to this heading"></a></h2>
+<p>The library has the following components:</p>
+<section id="core">
+<h3>Core<a class="headerlink" href="#core" title="Link to this heading"></a></h3>
+<p>The core part of the library consists of the following files:</p>
+<ul class="simple">
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">proc_analyze.(h|c)</span></code>: Functions for analyzing procedures (Will automatically be included if runtime is enabled)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_client.(h|c)</span></code>: Client-side functions, e.g. request to push procedure over CSP network.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_mutex.h</span></code>: Mutex for controlling access to relevant data structures.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">sync/proc_mutex_FreeRTOS.c</span></code>: FreeRTOS-specific mutex implementation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sync/proc_mutex_POSIX.c</span></code>: POSIX-specific mutex implementation.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_pack.(h|c)</span></code>: Functions for packing and unpacking procedures into CSP packets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_runtime.h</span></code>: Runtime interface as expected by the core library.</p></li>
+<li><p><em>Optional</em><code class="docutils literal notranslate"><span class="pre">proc_server.(h|c)</span></code>: Server-side functions, e.g. handling incoming procedure requests (Will automatically be included if procedure storage is enabled)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_store.h</span></code>: Functions for storing and retrieving procedures in a local procedure table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_types.h</span></code>: Procedure data type, including the procedure structure and the instruction structure.</p></li>
+</ul>
+</section>
+<section id="storage">
+<h3>Storage<a class="headerlink" href="#storage" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">proc_store_dynamic.h</span></code>: Procedure storage using dynamic memory allocation.</p></li>
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">proc_store_static.h</span></code>: Procedure storage using static memory allocation.</p></li>
+</ul>
+</section>
+<section id="runtime">
+<h3>Runtime<a class="headerlink" href="#runtime" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">runtime/proc_runtime_FreeRTOS.c</span></code>: FreeRTOS-based runtime for <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code>.</p></li>
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">runtime/proc_runtime_instructions_FreeRTOS.c</span></code>: FreeRTOS-specific instruction handlers.</p></li>
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">runtime/proc_runtime_POSIX.c</span></code>: POSIX-based runtime for <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code>.</p></li>
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">runtime/proc_runtime_instructions_POSIX.c</span></code>: POSIX-specific instruction handlers.</p></li>
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">runtime/proc_runtime_instructions.c</span></code>: Default platform-agnostic instruction handlers.</p></li>
+</ul>
+</section>
+<section id="slash">
+<h3>Slash<a class="headerlink" href="#slash" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>Optional</em> <code class="docutils literal notranslate"><span class="pre">slash/slash_csp_proc.c</span></code>: A series of slash commands for interacting with <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="configuration-options-at-compile-time">
+<h2>Configuration options at compile-time<a class="headerlink" href="#configuration-options-at-compile-time" title="Link to this heading"></a></h2>
+<p>The following options can be configured at compile-time:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RESERVED_PROC_SLOTS</span></code>: This option defines the number of reserved procedure slots.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAX_PROC_BLOCK_TIMEOUT_MS</span></code>: This option sets the maximum time (in milliseconds) that block instructions will wait before timing out.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MIN_PROC_BLOCK_PERIOD_MS</span></code>: This option sets the minimum time (in milliseconds) between evaluations of a block instruction’s condition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAX_PROC_RECURSION_DEPTH</span></code>: This option sets the maximum recursion depth of a procedure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAX_PROC_CONCURRENT</span></code>: This option sets the maximum number of procedure runtimes that can run concurrently.</p></li>
+</ul>
+<p>In addition to the above, the default runtime implementations have their own set of configuration options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PARAM_REMOTE_TIMEOUT_MS</span></code>: This option sets the timeout (in milliseconds) for a remote call via libparam.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PARAM_ACK_ON_PUSH</span></code>: This option toggles whether to expect an acknowledgment from the remote node when pushing a parameter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PROC_FLOAT_EPSILON</span></code>: This option sets the epsilon value for floating-point comparisons.</p></li>
+</ul>
+<p>And the FreeRTOS-based runtime has the following additional options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PROC_RUNTIME_TASK_SIZE</span></code>: This option sets the stack size of a runtime task.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PROC_RUNTIME_TASK_PRIORITY</span></code>: This option sets the FreeRTOS task priority of a runtime task.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TASK_STORAGE_RECURSION_DEPTH_INDEX</span></code>: This option sets the index of the thread-local storage pointer for recursion depth tracking.</p></li>
+</ul>
+<p>Please note that the FreeRTOS-based runtime requires a <code class="docutils literal notranslate"><span class="pre">FreeRTOSConfig.h</span></code> file in the parent project. This configuration file should define <code class="docutils literal notranslate"><span class="pre">configNUM_THREAD_LOCAL_STORAGE_POINTER</span></code> to a value greater than 0, as the tracking of recursion depth is done using thread-local storage.</p>
+<p>Lastly, the library has the following meson build options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">slash</span></code> (boolean, default: <code class="docutils literal notranslate"><span class="pre">false</span></code>): Build slash.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freertos</span></code> (boolean, default: <code class="docutils literal notranslate"><span class="pre">false</span></code>): Build for FreeRTOS system.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">posix</span></code> (boolean, default: <code class="docutils literal notranslate"><span class="pre">true</span></code>): Build for POSIX system.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_runtime</span></code> (boolean, default: <code class="docutils literal notranslate"><span class="pre">false</span></code>): Build the runtime module.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_analysis</span></code> (boolean, default: <code class="docutils literal notranslate"><span class="pre">false</span></code>): Build the analysis module.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_store_static</span></code> (boolean, default: <code class="docutils literal notranslate"><span class="pre">false</span></code>): Build the proc store with static memory allocation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc_store_dynamic</span></code> (boolean, default: <code class="docutils literal notranslate"><span class="pre">true</span></code>): Build the proc store with dynamic memory allocation.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

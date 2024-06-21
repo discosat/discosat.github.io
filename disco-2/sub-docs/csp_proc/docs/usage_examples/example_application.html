@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example application including csp_proc &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Disco 2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Example application including <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/disco-2/sub-docs/csp_proc/docs/usage_examples/example_application.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="example-application-including-csp-proc">
+<h1>Example application including <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code><a class="headerlink" href="#example-application-including-csp-proc" title="Link to this heading"></a></h1>
+<p>This examples demonstrates a simple application connected to a network via <code class="docutils literal notranslate"><span class="pre">libcsp</span></code>, including <code class="docutils literal notranslate"><span class="pre">libparam</span></code> to expose parameters and <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> to run procedures on the network. After this, it should hopefully be clear how simple it is to integrate <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> after setting up a basic <code class="docutils literal notranslate"><span class="pre">libcsp</span></code> + <code class="docutils literal notranslate"><span class="pre">libparam</span></code> application.</p>
+<p>For this example, we’ll build for a POSIX system (converting to e.g. FreeRTOS is mostly just a matter of subsituting pthreads for FreeRTOS tasks). A <code class="docutils literal notranslate"><span class="pre">libcsp</span></code>-based application will usually consist of a few standard components like shown below. (Read the corresponding docs of <a class="reference external" href="https://libcsp.github.io/libcsp/"><code class="docutils literal notranslate"><span class="pre">libcsp</span></code></a> and <a class="reference external" href="https://github.com/spaceinventor/libparam/blob/master/doc/introduction.rst"><code class="docutils literal notranslate"><span class="pre">libparam</span></code></a> for more information)</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;pthread.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;csp/csp.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;param/param_server.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vmem/vmem_server.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">vmem_server_task</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">param</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">	</span><span class="n">vmem_server_loop</span><span class="p">(</span><span class="n">param</span><span class="p">);</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">router_task</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">param</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">	</span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">		</span><span class="n">csp_route_work</span><span class="p">();</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">serial_get</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">csp_init</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">csp_bind_callback</span><span class="p">(</span><span class="n">csp_service_handler</span><span class="p">,</span><span class="w"> </span><span class="n">CSP_ANY</span><span class="p">);</span>
+<span class="w">    </span><span class="n">csp_bind_callback</span><span class="p">(</span><span class="n">param_serve</span><span class="p">,</span><span class="w"> </span><span class="n">PARAM_PORT_SERVER</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">pthread_t</span><span class="w"> </span><span class="n">vmem_server_handle</span><span class="p">;</span>
+<span class="w">    </span><span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vmem_server_handle</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vmem_server_task</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">pthread_t</span><span class="w"> </span><span class="n">router_handle</span><span class="p">;</span>
+<span class="w">    </span><span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">router_handle</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">router_task</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="c1">// main loop</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Furthermore, we’ll want to add an interface to the CSP network. For this example, we’ll be using one of the defaults based on the ZeroMQ asynchronous messaging library, and exposing our application as node 1 on the network.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// (...)</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;csp/interfaces/csp_if_zmqhub.h&gt;</span>
+
+<span class="c1">// (...)</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">csp_iface_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">iface</span><span class="p">;</span>
+<span class="w">	</span><span class="n">csp_zmqhub_init_filter2</span><span class="p">(</span><span class="s">&quot;ZMQ&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;localhost&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">iface</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">CSP_ZMQPROXY_SUBSCRIBE_PORT</span><span class="p">,</span><span class="w"> </span><span class="n">CSP_ZMQPROXY_PUBLISH_PORT</span><span class="p">);</span>
+
+<span class="w">	</span><span class="n">iface</span><span class="o">-&gt;</span><span class="n">is_default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">	</span><span class="n">iface</span><span class="o">-&gt;</span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">	</span><span class="n">iface</span><span class="o">-&gt;</span><span class="n">netmask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
+<span class="w">	</span><span class="n">iface</span><span class="o">-&gt;</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ZMQ&quot;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// (...)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally, we will want to define and store some parameters on this node. Let’s define some parameters that allow us to run the <a class="reference internal" href="example_procedures.html#fibonacci-sequence"><span class="std std-ref">Fibonacci sequence example procedure</span></a>.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// (...)</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vmem/vmem.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vmem/vmem_ram.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;param/param.h&gt;</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="n">vmem_t</span><span class="w"> </span><span class="n">vmem_config</span><span class="p">;</span>
+<span class="n">VMEM_DEFINE_STATIC_RAM</span><span class="p">(</span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;config&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">_n</span><span class="p">,</span><span class="w"> </span><span class="n">__zero</span><span class="p">,</span><span class="w"> </span><span class="n">_rx0</span><span class="p">,</span><span class="w"> </span><span class="n">_rx1</span><span class="p">,</span><span class="w"> </span><span class="n">_rx2</span><span class="p">;</span>
+
+<span class="n">PARAM_DEFINE_STATIC_RAM</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">PARAM_TYPE_UINT32</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">PM_CONF</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_n</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<span class="n">PARAM_DEFINE_STATIC_RAM</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">_zero</span><span class="p">,</span><span class="w"> </span><span class="n">PARAM_TYPE_UINT32</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">PM_CONF</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">__zero</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<span class="n">PARAM_DEFINE_STATIC_RAM</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">rx0</span><span class="p">,</span><span class="w"> </span><span class="n">PARAM_TYPE_UINT32</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">PM_CONF</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_rx0</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<span class="n">PARAM_DEFINE_STATIC_RAM</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">rx1</span><span class="p">,</span><span class="w"> </span><span class="n">PARAM_TYPE_UINT32</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">PM_CONF</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_rx1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<span class="n">PARAM_DEFINE_STATIC_RAM</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">rx2</span><span class="p">,</span><span class="w"> </span><span class="n">PARAM_TYPE_UINT32</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">PM_CONF</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_rx2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">);</span>
+
+<span class="c1">// (...)</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// (...)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that it’s normally recommended to expose more general parameters such as an array of uint32 to act as a general purpose register for intermediate calculations. These parameter definitions simply make the example procedure easier to understand.</p>
+<section id="build-setup">
+<h2>Build setup<a class="headerlink" href="#build-setup" title="Link to this heading"></a></h2>
+<p>We’ll be using Meson to build the application. The following <code class="docutils literal notranslate"><span class="pre">meson.build</span></code> file should be sufficient to build the application, assuming all source code is in the <code class="docutils literal notranslate"><span class="pre">main.c</span></code> file and <code class="docutils literal notranslate"><span class="pre">libcsp</span></code> + <code class="docutils literal notranslate"><span class="pre">libparam</span></code> are available in the <code class="docutils literal notranslate"><span class="pre">lib</span></code> subdirectory as <code class="docutils literal notranslate"><span class="pre">csp</span></code> and <code class="docutils literal notranslate"><span class="pre">param</span></code> respectively</p>
+<div class="highlight-meson notranslate"><div class="highlight"><pre><span></span><span class="nb">project</span><span class="p">(</span><span class="s">&#39;csp-proc-demo&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;c&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">subproject_dir</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;lib&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">default_options</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">	</span><span class="s">&#39;buildtype=release&#39;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">	</span><span class="s">&#39;c_std=gnu11&#39;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">	</span><span class="s">&#39;b_lto=false&#39;</span><span class="p">,</span>
+<span class="w">	</span><span class="s">&#39;default_library=static&#39;</span><span class="p">,</span>
+<span class="w">	</span><span class="s">&#39;param:list_dynamic=true&#39;</span>
+<span class="p">])</span>
+
+<span class="n">sources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">files</span><span class="p">([</span><span class="s">&#39;main.c&#39;</span><span class="p">])</span>
+
+<span class="n">deps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+<span class="n">deps</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">dependency</span><span class="p">(</span><span class="s">&#39;csp&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">fallback</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;csp&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;csp_dep&#39;</span><span class="p">])</span>
+<span class="n">deps</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">dependency</span><span class="p">(</span><span class="s">&#39;param&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">fallback</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;param&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;param_dep&#39;</span><span class="p">])</span>
+
+<span class="n">csp_proc_demo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">executable</span><span class="p">(</span><span class="s">&#39;csp-proc-demo&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">sources</span><span class="p">,</span>
+<span class="w">	</span><span class="n">dependencies</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">deps</span><span class="p">,</span>
+<span class="w">	</span><span class="n">install</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">	</span><span class="n">link_args</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;-Wl,--export-dynamic&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;-ldl&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="integrating-csp-proc">
+<h2>Integrating <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code><a class="headerlink" href="#integrating-csp-proc" title="Link to this heading"></a></h2>
+<p>Integrating <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> into the application is as simple as adding the following lines to the <code class="docutils literal notranslate"><span class="pre">main</span></code> function. This will start the <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> server on the node (depending on the work being done by <code class="docutils literal notranslate"><span class="pre">libcsp</span></code>) and allow you to run procedures on it.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// (...)</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;csp_proc/proc_server.h&gt;</span>
+
+<span class="c1">// (...)</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// (...)</span>
+
+<span class="w">    </span><span class="n">proc_server_init</span><span class="p">();</span>
+<span class="w">    </span><span class="n">csp_bind_callback</span><span class="p">(</span><span class="n">proc_serve</span><span class="p">,</span><span class="w"> </span><span class="n">PROC_PORT_SERVER</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// (...)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">PROC_PORT_SERVER</span></code> is an arbitrary default port defined in <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> that the server listens on. This can be changed to any other port if needed (but this must naturally align with the client-side code).</p>
+<section id="build-setup-with-csp-proc">
+<h3>Build setup with <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code><a class="headerlink" href="#build-setup-with-csp-proc" title="Link to this heading"></a></h3>
+<p>To build the application with <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code>, you’ll need to add the <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> dependency to the <code class="docutils literal notranslate"><span class="pre">meson.build</span></code> file. This can be done by adding the following line to the <code class="docutils literal notranslate"><span class="pre">deps</span></code> list and specifying a few options (assuming <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> is available in the <code class="docutils literal notranslate"><span class="pre">lib</span></code> subdirectory):</p>
+<div class="highlight-meson notranslate"><div class="highlight"><pre><span></span><span class="nb">project</span><span class="p">((...),</span><span class="w"> </span><span class="n">default_options</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">(...)</span>
+<span class="w">    </span><span class="s">&#39;csp_proc:posix=true&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&#39;csp_proc:proc_runtime=true&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">(...)</span>
+<span class="p">])</span>
+
+<span class="p">(...)</span>
+
+<span class="n">deps</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">dependency</span><span class="p">(</span><span class="s">&#39;csp_proc&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">fallback</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;csp_proc&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;csp_proc_dep&#39;</span><span class="p">]).</span><span class="n">as_link_whole</span><span class="p">()</span>
+
+<span class="p">(...)</span>
+</pre></div>
+</div>
+<p>Remember to add <code class="docutils literal notranslate"><span class="pre">.as_link_whole()</span></code> to the dependency to avoid link-time optimization issues.</p>
+</section>
+</section>
+<section id="running-procedures">
+<h2>Running procedures<a class="headerlink" href="#running-procedures" title="Link to this heading"></a></h2>
+<p>You can now build and run the application, after which your node will be available on the network and ready to run procedures. To interact with the network, setup a simple client e.g. using the <code class="docutils literal notranslate"><span class="pre">slash</span></code> commands provided by <code class="docutils literal notranslate"><span class="pre">csp_proc</span></code>. Refer to <a class="reference external" href="https://github.com/discosat/csh">discosat/csh</a> for an example client implementation. The build setup in that repository also provides utility called <code class="docutils literal notranslate"><span class="pre">zmqproxy</span></code> that can be used to connect the nodes together. In summary, when everything is compiled, you can run the following commands to start the application and connect to the network:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>./csp-proc-demo<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="c1"># in build directory of csp-proc-demo</span>
+./zmqproxy<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="c1"># in build directory of discosat/csh  </span>
+./csh<span class="w"> </span><span class="c1"># in build directory of discosat/csh which</span>
+</pre></div>
+</div>
+<p>from the <code class="docutils literal notranslate"><span class="pre">csh</span></code> prompt, you can now run the following commands to finish the CSP setup:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>csp<span class="w"> </span>init
+csp<span class="w"> </span>add<span class="w"> </span>zmq<span class="w"> </span>-d<span class="w"> </span><span class="m">2</span><span class="w"> </span>localhost<span class="w"> </span><span class="c1"># add client as node 2 on the network</span>
+<span class="c1"># run `csp scan` or `ping 1` to verify the connection</span>
+</pre></div>
+</div>
+<p>You should now be able to see node 1 in the network and run procedures on it. For example, you can set up and run the Fibonacci sequence procedure by running the following commands:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the active node to node 1 for implicit node argument</span>
+node<span class="w"> </span><span class="m">1</span>
+
+<span class="c1"># procedure 0 (initialization)</span>
+proc<span class="w"> </span>new
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>_zero<span class="w"> </span><span class="m">0</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>rx0<span class="w"> </span><span class="m">0</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>rx1<span class="w"> </span><span class="m">1</span>
+proc<span class="w"> </span>ifelse<span class="w"> </span>n<span class="w"> </span>&gt;<span class="w"> </span>_zero
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">69</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">42</span>
+
+<span class="c1"># procedure 1 (calculation)</span>
+proc<span class="w"> </span>new
+proc<span class="w"> </span>binop<span class="w"> </span>rx0<span class="w"> </span>+<span class="w"> </span>rx1<span class="w"> </span>rx2
+proc<span class="w"> </span>unop<span class="w"> </span>rx1<span class="w"> </span>idt<span class="w"> </span>rx0
+proc<span class="w"> </span>unop<span class="w"> </span>rx2<span class="w"> </span>idt<span class="w"> </span>rx1
+proc<span class="w"> </span>unop<span class="w"> </span>n<span class="w"> </span>--<span class="w"> </span>n
+proc<span class="w"> </span>ifelse<span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>_zero
+proc<span class="w"> </span>noop
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">69</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">69</span>
+
+<span class="c1"># Everything is now set up. Provide an argument for n and run the procedure. Make sure to download the parameter list first to be able to set n directly.</span>
+list<span class="w"> </span>download
+<span class="nb">set</span><span class="w"> </span>n<span class="w"> </span><span class="m">10</span>
+proc<span class="w"> </span>run<span class="w"> </span><span class="m">42</span>
+
+<span class="c1"># The result can be read from the rx0 parameter</span>
+get<span class="w"> </span>rx0<span class="w">  </span><span class="c1"># returns 55</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

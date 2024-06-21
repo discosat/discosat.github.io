@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Software &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="System setup" href="system-setup.html" />
+    <link rel="prev" title="Terms and Abbreviations" href="../terms-and-abbreviations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Disco 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../terms-and-abbreviations.html">Terms and Abbreviations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Software</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="system-setup.html">System setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="camera-controller.html">Camera Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="app-sys-manager.html">Application/System manager (Linux system calls over CSP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cortex-m7.html">Cortex-M7 (low-power core)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flight-planning-csp-proc.html">Flight planning (<cite>csp_proc</cite>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Disco 2</a></li>
+      <li class="breadcrumb-item active">Software</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/disco-2/software/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="software">
+<h1>Software<a class="headerlink" href="#software" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="system-setup.html">System setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="system-setup.html#serial-connection-to-the-com">Serial connection to the CoM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="system-setup.html#uart-device-mapping">UART device mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="system-setup.html#flash-the-system-image-onto-the-payload-com">Flash the system image onto the payload CoM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system-setup.html#connecting-to-can-peripherals-on-the-picocorebbdsi-baseboard">Connecting to CAN peripherals on the PicoCoreBBDSI baseboard</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="image-processing-pipeline.html">Image Processing Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="image-processing-pipeline.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-processing-pipeline.html#configuring-the-pipeline">Configuring the Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="image-processing-pipeline.html#command-1-ippc-pipeline">Command 1: <code class="docutils literal notranslate"><span class="pre">ippc</span> <span class="pre">pipeline</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="image-processing-pipeline.html#command-2-ippc-module">Command 2: <code class="docutils literal notranslate"><span class="pre">ippc</span> <span class="pre">module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="image-processing-pipeline.html#serialization-of-configurations">Serialization of configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-processing-pipeline.html#building-the-pipeline-binary">Building the Pipeline Binary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-processing-pipeline.html#running-the-application">Running the Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-processing-pipeline.html#initiating-pipeline-processing">Initiating Pipeline Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-processing-pipeline.html#error-signaling">Error Signaling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="image-processing-pipeline.html#error-code-examples">Error Code Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="camera-controller.html">Camera Controller</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="camera-controller.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="camera-controller.html#image-data">Image data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="camera-controller.html#visible-light-sensor-data">Visible light sensor data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="camera-controller.html#ir-light-sensor-data">IR light sensor data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="camera-controller.html#capturing-images">Capturing images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="camera-controller.html#building">Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="camera-controller.html#error-log">Error log</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app-sys-manager.html">Application/System manager (Linux system calls over CSP)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app-sys-manager.html#payload-nodes-in-the-csp-network">Payload Nodes in the CSP network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cortex-m7.html">Cortex-M7 (low-power core)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cortex-m7.html#parameters-libparam">Parameters (<code class="docutils literal notranslate"><span class="pre">libparam</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cortex-m7.html#application-components">Application components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="flight-planning-csp-proc.html">Flight planning (<cite>csp_proc</cite>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sub-docs/csp_proc/index.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sub-docs/csp_proc_function_reference.html"><cite>csp_proc</cite> Function Reference</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../terms-and-abbreviations.html" class="btn btn-neutral float-left" title="Terms and Abbreviations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="system-setup.html" class="btn btn-neutral float-right" title="System setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

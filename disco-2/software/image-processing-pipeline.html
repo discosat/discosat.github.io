@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Processing Pipeline &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Camera Controller" href="camera-controller.html" />
+    <link rel="prev" title="System setup" href="system-setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Disco 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../terms-and-abbreviations.html">Terms and Abbreviations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Software</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="system-setup.html">System setup</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Image Processing Pipeline</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuring-the-pipeline">Configuring the Pipeline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#serialization-of-configurations">Serialization of configurations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#building-the-pipeline-binary">Building the Pipeline Binary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#running-the-application">Running the Application</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#initiating-pipeline-processing">Initiating Pipeline Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#error-signaling">Error Signaling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="camera-controller.html">Camera Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="app-sys-manager.html">Application/System manager (Linux system calls over CSP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cortex-m7.html">Cortex-M7 (low-power core)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flight-planning-csp-proc.html">Flight planning (<cite>csp_proc</cite>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Disco 2</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Software</a></li>
+      <li class="breadcrumb-item active">Image Processing Pipeline</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/disco-2/software/image-processing-pipeline.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="image-processing-pipeline">
+<h1>Image Processing Pipeline<a class="headerlink" href="#image-processing-pipeline" title="Link to this heading"></a></h1>
+<p>The DISCO-2 Image Processing Pipeline (DIPP) is build as a configurable and extendable image processing pipeline that facilitates remote reconfiguration and reordering of individual modules in the pipeline to provide a flexible solution for diverse imaging needs. Each module is seen as fully self-contained image processing environment which has all its dependencies statically compiled inside.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The purpose of the image processing pipeline is to process images from the camera, before they are downlinked to the ground station. The main objective is to filter away bad data to optimize the utilization of the limited downlink bandwidth. The image filtering takes place within different image processing modules in the pipeline.</p>
+<p>The image processing pipeline and the camera communicate though the use of <a class="reference external" href="https://docs.oracle.com/cd/E19683-01/816-5042/svipc-41256/index.html">System V Shared Memory</a> and a <a class="reference external" href="https://docs.oracle.com/cd/E19683-01/816-5042/svipc-23310/index.html">System V Message Queue</a>. The camera will take images in bursts, and batch the data from the raw images together such that each image from the burst will be stored contiguously in a <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*data</span></code> array, which will be located inside a shared memory segment which has been created exclusively for the given image batch. In-between the contiguous image data, a 32-bit integer will be stored which indicates the size of the following image in the data. The image data sizes will be utilized for iterating through the images in the batch, as the image size indicates how many bytes to skip ahead, in order to reach the next image in the batch. An example of some batched image data can be seen below:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example buffer containing image data</span>
+<span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">buffer</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;i&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;m&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;g&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;e&#39;</span><span class="p">,</span><span class="w">     </span><span class="c1">// 4 bits allocated for the size of the first image, followed by image data</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;f&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;o&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;o&#39;</span><span class="p">,</span><span class="w">               </span><span class="c1">// 4 bits allocated for the size the second image, followed by image data</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;b&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;r&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;b&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="w"> </span><span class="c1">// 4 bits allocated for the size the third image, followed by image data</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The camera will construct some metadata about the saved image batch data, which will be sent to the pipeline through a System V Message Queue, utilizing a static predetermined key for the queue. The metadata will be stored in the following struct:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ImageBatch</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">mtype</span><span class="p">;</span><span class="w">          </span><span class="cm">/* message type to read from the message queue */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">height</span><span class="p">;</span><span class="w">          </span><span class="cm">/* height of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">width</span><span class="p">;</span><span class="w">           </span><span class="cm">/* width of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">channels</span><span class="p">;</span><span class="w">        </span><span class="cm">/* channels of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">num_images</span><span class="p">;</span><span class="w">      </span><span class="cm">/* amount of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">batch_size</span><span class="p">;</span><span class="w">      </span><span class="cm">/* size of the entire image batch of data */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">shm_key</span><span class="p">;</span><span class="w">         </span><span class="cm">/* key to shared memory segment of image data */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">pipeline_id</span><span class="p">;</span><span class="w">     </span><span class="cm">/* id of pipeline to utilize for processing */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">;</span><span class="w"> </span><span class="cm">/* address to image data (in shared memory) */</span>
+<span class="p">}</span><span class="w"> </span><span class="n">ImageBatch</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">ImageBatch</span></code> struct contains information about the images in the batch, such as their width, height, amount of channels and amount of images. The <code class="docutils literal notranslate"><span class="pre">ImageBatch</span></code> struct will also contain a pointer to the shared memory segment, where the raw image data is stored.</p>
+<p>While processing the raw image data, the pipeline modules will modify the image data from shared memory and either reuse the same shared memory segment, or create a new shared memory segment if the new image data wont fit into the old segment. When a module finishes, it updates the data in the <code class="docutils literal notranslate"><span class="pre">ImageBatch</span></code> struct, and updates the pointer to the shared memory segment, if it has changed. Hereafter the <code class="docutils literal notranslate"><span class="pre">ImageBatch</span></code> struct is passed onto the next module in the pipeline.</p>
+<p>In order to ensure isolation and fault-tolerance, each module will be executed in a child-process forked by the main pipeline process. The main process will supervise the execution of the child-processes and fail gracefully if a module encounters a failure (e.g. encounters a runtime exception). The image batch structs are sent back and forth in-between modules through the use of <code class="docutils literal notranslate"><span class="pre">pipes</span></code> which enable secure and isolated data transfer between different memory spaces. This method not only keeps the module outputs separate, but also provides a checkpoint for the supervisor (main process) to verify the successful completion of the child’s task.</p>
+<p>The pipeline and the modules are configured through CSP where configurations are sent to the pipeline using generic <a class="reference external" href="https://protobuf.dev/">Protobuf</a> schemas which hold the required information. The configurations are made, and sent, using our CSH extension service described in <a class="reference internal" href="#configuring-the-pipeline"><span class="xref myst">the following section</span></a>.</p>
+<p>An overview of how the module execution and configuration takes place, and how the pipeline interacts with the camera, can be seen in the following diagram:</p>
+<p><img alt="Pipeline Software Architecture" src="../../_images/pipeline_diagram.png" />
+<em>Software architecture diagram of the DISCO-2 image processing pipeline. This diagram illustrates a scenario with example image processing modules and configurations. The diagram showcases how the pipeline interacts with the camera through shared memory and a System V Message Queue.</em></p>
+</section>
+<section id="configuring-the-pipeline">
+<h2>Configuring the Pipeline<a class="headerlink" href="#configuring-the-pipeline" title="Link to this heading"></a></h2>
+<p>Setting up DIPP involves defining the sequence and parameters of processing modules. Configuration can be performed remotely to tailor the pipeline to specific project requirements without direct access to the deployment environment. Two primary functions (<code class="docutils literal notranslate"><span class="pre">ippc</span> <span class="pre">pipeline</span> <span class="pre">[options]</span> <span class="pre">&lt;pipeline-idx&gt;</span> <span class="pre">&lt;config-file&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ippc</span> <span class="pre">module</span> <span class="pre">[options]</span> <span class="pre">&lt;module-idx&gt;</span> <span class="pre">&lt;config-file&gt;</span></code>) are introduced as CSH extensions that enables the reconfiguration of the pipeline and individual modules. The source code and setup for the pipeline CSH extension are available on <a class="reference external" href="https://github.com/Lindharden/csp_ippc">github.com/Lindharden/csp_ippc</a>. The two commands are described in more detail in <a class="reference internal" href="#command-1-ippc-pipeline"><span class="xref myst">Command 1</span></a> and <a class="reference internal" href="#command-2-ippc-module"><span class="xref myst">Command 2</span></a></p>
+<section id="command-1-ippc-pipeline">
+<h3>Command 1: <code class="docutils literal notranslate"><span class="pre">ippc</span> <span class="pre">pipeline</span></code><a class="headerlink" href="#command-1-ippc-pipeline" title="Link to this heading"></a></h3>
+<p>This command updates what modules are to be active in the specified pipeline.
+DIPP supports the definition of multiple different pipeline configurations, which means a pipeline ID along with an YAML config file (relative path) can be specified.
+The configuration defined in the YAML file will hereafter be defined as the configuration of the specific pipeline indicated by the given ID.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ippc</span> <span class="n">pipeline</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">pipeline</span><span class="o">-</span><span class="n">idx</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">config</span><span class="o">-</span><span class="n">file</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-n,</span> <span class="pre">--node</span> <span class="pre">[NUM]</span></code>: node (default = &lt;env&gt;).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-t,</span> <span class="pre">--timeout</span> <span class="pre">[NUM]</span></code>: timeout (default = &lt;env&gt;).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--paramver</span></code>: parameter system version (default = 2).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-a,</span> <span class="pre">--no_ack_push</span></code>: Disable ack with param push queue (default = true).</p></li>
+</ul>
+<p>Example:
+The below example updates the pipeline configuration for pipeline 1 on node 162 using the specified YAML file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ippc</span> <span class="n">pipeline</span> <span class="o">-</span><span class="n">n</span> <span class="mi">162</span> <span class="mi">1</span> <span class="s2">&quot;pipeline_config.yaml&quot;</span>
+</pre></div>
+</div>
+<p>Example of a valid pipeline configuration file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">order</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">param_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classification</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">order</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">param_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">superresolution</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">order</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">param_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compression</span>
+</pre></div>
+</div>
+<p>Note: A module included in multiple pipelines can be linked to different param_ids.</p>
+</section>
+<section id="command-2-ippc-module">
+<h3>Command 2: <code class="docutils literal notranslate"><span class="pre">ippc</span> <span class="pre">module</span></code><a class="headerlink" href="#command-2-ippc-module" title="Link to this heading"></a></h3>
+<p>This command updates the parameters for a specific pipeline module.
+Specify ID of module and YAML config file (relative path).</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ippc</span> <span class="n">module</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">-</span><span class="n">idx</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">config</span><span class="o">-</span><span class="n">file</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-n,</span> <span class="pre">--node</span> <span class="pre">[NUM]</span></code>: node (default = &lt;env&gt;).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-t,</span> <span class="pre">--timeout</span> <span class="pre">[NUM]</span></code>: timeout (default = &lt;env&gt;).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--paramver</span></code>: parameter system version (default = 2).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-a,</span> <span class="pre">--no_ack_push</span></code>: Disable ack with param push queue (default = true).</p></li>
+</ul>
+<p>Example:
+The below example updates the parameters for module 2 on node 162 using the specified YAML file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ippc</span> <span class="n">module</span> <span class="o">-</span><span class="n">n</span> <span class="mi">162</span> <span class="mi">2</span> <span class="s2">&quot;module_config.yaml&quot;</span>
+</pre></div>
+</div>
+<p>Example of a valid module configuration file (see also the valid types):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use following keys for type  #</span>
+<span class="c1">#   bool    = 2                #</span>
+<span class="c1">#   integer = 3                #</span>
+<span class="c1">#   float   = 4                #</span>
+<span class="c1">#   string  = 5                #</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">param_name_1</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">param_name_2</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">param_name_3</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.1415</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">param_name_4</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DISCO</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="serialization-of-configurations">
+<h2>Serialization of configurations<a class="headerlink" href="#serialization-of-configurations" title="Link to this heading"></a></h2>
+<p>When configurations are sent through CSP using the ippc extension, the data is serialized using Protobuf. Protobuf serializes to a compact format and allows packing and unpacking directly to and from static structs making it a robust tool. DIPP uses two Protobuf schemas, the first one is for defining modules in a pipeline, the order and linked parameters. See the schema below:</p>
+<div class="highlight-proto notranslate"><div class="highlight"><pre><span></span><span class="kd">message</span><span class="w"> </span><span class="nc">ModuleDefinition</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int32</span><span class="w"> </span><span class="na">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int32</span><span class="w"> </span><span class="na">param_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">message</span><span class="w"> </span><span class="nc">PipelineDefinition</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">repeated</span><span class="w"> </span><span class="n">ModuleDefinition</span><span class="w"> </span><span class="na">modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The second Protobuf schema is for declaring module parameters, which are key-value pairs. See the schema below:</p>
+<div class="highlight-proto notranslate"><div class="highlight"><pre><span></span><span class="kd">message</span><span class="w"> </span><span class="nc">ConfigParameter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">string</span><span class="w"> </span><span class="na">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="k">oneof</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">bool</span><span class="w"> </span><span class="na">bool_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">            </span><span class="kt">int32</span><span class="w"> </span><span class="na">int_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">            </span><span class="kt">float</span><span class="w"> </span><span class="na">float_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">            </span><span class="kt">string</span><span class="w"> </span><span class="na">string_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="kd">message</span><span class="w"> </span><span class="nc">ModuleConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">repeated</span><span class="w"> </span><span class="n">ConfigParameter</span><span class="w"> </span><span class="na">parameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="building-the-pipeline-binary">
+<h2>Building the Pipeline Binary<a class="headerlink" href="#building-the-pipeline-binary" title="Link to this heading"></a></h2>
+<p>The application builds using meson/ninja which generates a <code class="docutils literal notranslate"><span class="pre">builddir</span></code> folder containing the executable.</p>
+</section>
+<section id="running-the-application">
+<h2>Running the Application<a class="headerlink" href="#running-the-application" title="Link to this heading"></a></h2>
+<p>Run the <code class="docutils literal notranslate"><span class="pre">dipp</span></code> binary in the <code class="docutils literal notranslate"><span class="pre">builddir</span></code> directory using <code class="docutils literal notranslate"><span class="pre">./builddir/dipp</span> <span class="pre">[OPTIONS]</span></code>. The <code class="docutils literal notranslate"><span class="pre">dipp</span></code> binary supports the following arguments:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Flag</strong></p></th>
+<th class="head"><p><strong>Default value</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ZMQ</span></code></p></td>
+<td><p>The connection interface to utilize for the pipeline. Possible values are: <br> - <code class="docutils literal notranslate"><span class="pre">ZMQ</span></code>: Run the pipeline with ZMQ (requires running ZMQ proxy). <br> - <code class="docutils literal notranslate"><span class="pre">KISS</span></code>: Run the pipeline with a defined KISS device. <br> - <code class="docutils literal notranslate"><span class="pre">CAN</span></code>: Run the pipeline with a defined CAN device.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-p</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">localhost</span></code></p></td>
+<td><p>Port or device to use for the specified connection interface. Examples are: <br> - <code class="docutils literal notranslate"><span class="pre">/dev/ttyS1</span></code> (KISS) <br> - <code class="docutils literal notranslate"><span class="pre">vcan0</span></code> (CAN)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-a</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">162</span></code></p></td>
+<td><p>CSP node address for the DIPP application.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The pipeline will act as a CSP/Param application.</p>
+</section>
+<section id="initiating-pipeline-processing">
+<h2>Initiating Pipeline Processing<a class="headerlink" href="#initiating-pipeline-processing" title="Link to this heading"></a></h2>
+<p>To initiate the pipeline, utilize the <code class="docutils literal notranslate"><span class="pre">pipeline_run</span></code> parameter on the CSP node through CSH. The <code class="docutils literal notranslate"><span class="pre">pipeline_run</span></code> parameter can be set to one of the following values, which determines the pipeline processing behavior.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong><em>pipeline_run</em> value</strong></p></th>
+<th class="head"><p><strong>Batch processing procedure</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><em>PROCESS_ONE</em></p></td>
+<td><p>Process a single image batch.</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p><em>PROCESS_ALL</em></p></td>
+<td><p>Process all image batches in message queue.</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p><em>PROCESS_WAIT_ONE</em></p></td>
+<td><p>Wait for image batch to arrive in message queue. Then process one image batch.</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><em>PROCESS_WAIT_ALL</em></p></td>
+<td><p>Wait for image batches to arrive in message queue. Then continuously process all arriving image batches.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="error-signaling">
+<h2>Error Signaling<a class="headerlink" href="#error-signaling" title="Link to this heading"></a></h2>
+<p>DIPP includes an integer parameter indicating the most recent cause of failure. The most resent error code can be accessed through the CSP parameter named <code class="docutils literal notranslate"><span class="pre">log_status</span></code>. The possible error codes, and their meaning, can be seen in the table below.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Error Code</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>100</p></td>
+<td><p>Memory Error: Malloc</p></td>
+</tr>
+<tr class="row-odd"><td><p>101</p></td>
+<td><p>Memory Error: Realloc</p></td>
+</tr>
+<tr class="row-even"><td><p>102</p></td>
+<td><p>Memory Error: Free</p></td>
+</tr>
+<tr class="row-odd"><td><p>200</p></td>
+<td><p>Message Queue Error: Not Found</p></td>
+</tr>
+<tr class="row-even"><td><p>201</p></td>
+<td><p>Message Queue Error: Empty</p></td>
+</tr>
+<tr class="row-odd"><td><p>300</p></td>
+<td><p>Shared Memory Error: Not Found</p></td>
+</tr>
+<tr class="row-even"><td><p>301</p></td>
+<td><p>Shared Memory Error: Detach</p></td>
+</tr>
+<tr class="row-odd"><td><p>302</p></td>
+<td><p>Shared Memory Error: Remove</p></td>
+</tr>
+<tr class="row-even"><td><p>303</p></td>
+<td><p>Shared Memory Error: Attach</p></td>
+</tr>
+<tr class="row-odd"><td><p>400</p></td>
+<td><p>Pipe Error: Read</p></td>
+</tr>
+<tr class="row-even"><td><p>401</p></td>
+<td><p>Pipe Error: Empty</p></td>
+</tr>
+<tr class="row-odd"><td><p>500</p></td>
+<td><p>Internal Error: PID Not Found</p></td>
+</tr>
+<tr class="row-even"><td><p>501</p></td>
+<td><p>Internal Error: Shared Object Not Found</p></td>
+</tr>
+<tr class="row-odd"><td><p>502</p></td>
+<td><p>Internal Error: Run Not Found</p></td>
+</tr>
+<tr class="row-even"><td><p>503</p></td>
+<td><p>Internal Error: Boolean Parameter Not Found</p></td>
+</tr>
+<tr class="row-odd"><td><p>504</p></td>
+<td><p>Internal Error: Integer Parameter Not Found</p></td>
+</tr>
+<tr class="row-even"><td><p>505</p></td>
+<td><p>Internal Error: Float Parameter Not Found</p></td>
+</tr>
+<tr class="row-odd"><td><p>506</p></td>
+<td><p>Internal Error: String Parameter Not Found</p></td>
+</tr>
+<tr class="row-even"><td><p>507</p></td>
+<td><p>Internal Error: Failed to pull remote parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p>508</p></td>
+<td><p>Internal Error: Failed to push remote parameter</p></td>
+</tr>
+<tr class="row-even"><td><p>509</p></td>
+<td><p>Internal Error: VMEM Not Found</p></td>
+</tr>
+<tr class="row-odd"><td><p>510</p></td>
+<td><p>Internal Error: VMEM Upload Failed</p></td>
+</tr>
+<tr class="row-even"><td><p>600</p></td>
+<td><p>Module Exit Error: Crash</p></td>
+</tr>
+<tr class="row-odd"><td><p>601</p></td>
+<td><p>Module Exit Error: Normal</p></td>
+</tr>
+<tr class="row-even"><td><p>700-799</p></td>
+<td><p>Module Exit Error: Custom error code defined by module</p></td>
+</tr>
+</tbody>
+</table>
+<p>All error codes are suffixed with ID of the pipeline (1 digit ranging from 1-9) and index of the module (2 digits ranging from 1-99) if applicable. Error codes suffixed with 0’s indicate failure happening outside of a module.</p>
+<section id="error-code-examples">
+<h3>Error Code Examples<a class="headerlink" href="#error-code-examples" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em><strong>708104</strong></em>: Module with index 4 in pipeline 1 failed with code 8.</p></li>
+<li><p><em><strong>600212</strong></em>: Module with index 12 in pipeline 2 crashed.</p></li>
+<li><p><em><strong>300205</strong></em>: Could not get Shared Memory in module 5 in pipeline 2.</p></li>
+<li><p><em><strong>501000</strong></em>: Could not find SO file with name ‘module’ during preload.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="system-setup.html" class="btn btn-neutral float-left" title="System setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="camera-controller.html" class="btn btn-neutral float-right" title="Camera Controller" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

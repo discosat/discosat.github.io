@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>csp_proc &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Disco 2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">csp_proc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/disco-2/sub-docs/csp_proc/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="csp-proc">
+<h1>csp_proc<a class="headerlink" href="#csp-proc" title="Link to this heading"></a></h1>
+<p><img alt="Tests" src="https://github.com/discosat/csp_proc/actions/workflows/run-tests.yml/badge.svg" />
+<a class="reference external" href="https://clang.llvm.org/docs/ClangFormat.html"><img alt="clang-format" src="https://img.shields.io/badge/code%20style-clang--format-blue.svg" /></a></p>
+<p>Lightweight, programmable procedures with a libcsp- and libparam-native runtime. This provides remote control of libparam-based coordination between nodes in a CSP network, essentially exposing the network as single programmable unit.</p>
+<p>The library has a relatively small footprint suitable for microcontrollers, requiring no external libraries other than libcsp and libparam themselves for the core of the library. As of writing, the library provides 2 default runtime implementations which depend on FreeRTOS and POSIX respectively.</p>
+<p>See also <a class="reference external" href="https://discosat.github.io/csp_proc/">https://discosat.github.io/csp_proc/</a> for more information.</p>
+</section>
+<section id="dsl-overview">
+<h1>DSL Overview<a class="headerlink" href="#dsl-overview" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">csp_proc</span></code> provides a set of slash commands that allow users to create, manage, and execute procedures on a given CSP node. The procedures facilitate control-flow and arithmetic operations while remaining small - usually on the order of hundreds of bytes! The runtime is detached from the DSL, allowing customizations, and there is support for pre-programmed, complex procedures on the native platform in reserved procedure slots. The following is a list of commands available in the DSL (see below for usage examples):</p>
+<section id="procedure-management-commands">
+<h2>Procedure Management Commands<a class="headerlink" href="#procedure-management-commands" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">new</span></code>: Creates a new procedure and sets it as the active procedure context.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">del</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Deletes the procedure in the specified slot (0-255) on the node. Note that some slots may be reserved for predefined procedures.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">pull</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Switches the active procedure context to the procedure pulled from the specified slot (0-255) on the node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">push</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Pushes the active procedure to the specified slot on the node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">size</span></code>: Returns the size (in bytes) of the active procedure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">pop</span> <span class="pre">[instruction</span> <span class="pre">index]</span></code>: Removes the instruction at the specified index (defaults to the latest instruction) in the active procedure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">list</span></code>: Lists the instructions in the active procedure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">slots</span> <span class="pre">[node]</span></code>: Lists the occupied procedure slots on the node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">run</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Executes the procedure in the specified slot.</p></li>
+</ul>
+</section>
+<section id="control-flow-and-arithmetic-operations">
+<h2>Control-Flow and Arithmetic Operations<a class="headerlink" href="#control-flow-and-arithmetic-operations" title="Link to this heading"></a></h2>
+<p>The following commands allow the user to program control-flow and arithmetic operations within procedures. The result is always a libparam parameter stored on the node hosting the corresponding procedure server (node 0 from its perspective) and <code class="docutils literal notranslate"><span class="pre">[node]</span></code> is the node on which the operands are located - Except when using the <code class="docutils literal notranslate"><span class="pre">rmt</span></code> unop operation, where it’s switched!</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">block</span> <span class="pre">&lt;param</span> <span class="pre">a&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;param</span> <span class="pre">b&gt;</span> <span class="pre">[node]</span></code>: Blocks execution of the procedure until the specified condition is met. <code class="docutils literal notranslate"><span class="pre">&lt;op&gt;</span></code> can be one of: <code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">!=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">ifelse</span> <span class="pre">&lt;param</span> <span class="pre">a&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;param</span> <span class="pre">b&gt;</span> <span class="pre">[node]</span></code>: Skips the next instruction if the condition is not met, and the following instruction if it is met. This command cannot be nested in the default runtime - i.e. it cannot be used again within the following 2 instructions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">noop</span></code>: Performs no operation. Useful in combination with <code class="docutils literal notranslate"><span class="pre">ifelse</span></code> instructions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">set</span> <span class="pre">&lt;param&gt;</span> <span class="pre">&lt;value&gt;</span> <span class="pre">[node]</span></code>: Sets the value of a parameter. The type of value is always inferred from the libparam type of the parameter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">unop</span> <span class="pre">&lt;param&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;result&gt;</span> <span class="pre">[node]</span></code>: Applies a unary operator to a parameter and stores the result. <code class="docutils literal notranslate"><span class="pre">&lt;op&gt;</span></code> can be one of: <code class="docutils literal notranslate"><span class="pre">++</span></code>, <code class="docutils literal notranslate"><span class="pre">--</span></code>, <code class="docutils literal notranslate"><span class="pre">!</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">idt</span></code>, <code class="docutils literal notranslate"><span class="pre">rmt</span></code>. <code class="docutils literal notranslate"><span class="pre">idt</span></code> and <code class="docutils literal notranslate"><span class="pre">rmt</span></code> are both identity operators.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">binop</span> <span class="pre">&lt;param</span> <span class="pre">a&gt;</span> <span class="pre">&lt;op&gt;</span> <span class="pre">&lt;param</span> <span class="pre">b&gt;</span> <span class="pre">&lt;result&gt;</span> <span class="pre">[node]</span></code>: Applies a binary operator to parameters <code class="docutils literal notranslate"><span class="pre">&lt;param</span> <span class="pre">a&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;param</span> <span class="pre">b&gt;</span></code> and stores the result. <code class="docutils literal notranslate"><span class="pre">&lt;op&gt;</span></code> can be one of: <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">%</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">proc</span> <span class="pre">call</span> <span class="pre">&lt;procedure</span> <span class="pre">slot&gt;</span> <span class="pre">[node]</span></code>: Inserts an instruction to run the procedure in the specified slot.</p></li>
+</ul>
+</section>
+</section>
+<section id="usage-examples">
+<h1>Usage Examples<a class="headerlink" href="#usage-examples" title="Link to this heading"></a></h1>
+<section id="geo-fencing">
+<h2>Geo-fencing<a class="headerlink" href="#geo-fencing" title="Link to this heading"></a></h2>
+<p>In this example, we will imagine a scenario where a vehicle is equipped with a GNSS module exposed via libparam parameters on node 1, and node 2 has some active component that needs to be controlled based on the vehicle’s position, e.g. a sensor logging a data point when the vehicle enters a certain area. The following is a sequence of commands that can be used to implement a simple geo-fencing procedure based on manhattan distance from a fixed point. For this example, it’s assumed that node 1 has the libparam parameters: <code class="docutils literal notranslate"><span class="pre">lat</span></code> (double), <code class="docutils literal notranslate"><span class="pre">lon</span></code> (double) from the GNSS module along with <code class="docutils literal notranslate"><span class="pre">lat_diff</span></code> (double), <code class="docutils literal notranslate"><span class="pre">lon_diff</span></code> (double), <code class="docutils literal notranslate"><span class="pre">dist</span></code> (double), <code class="docutils literal notranslate"><span class="pre">geo_check</span></code> (uint8) and <code class="docutils literal notranslate"><span class="pre">_zero</span></code> (uint8) to store intermediate results, and <code class="docutils literal notranslate"><span class="pre">target_lon</span></code> (double) <code class="docutils literal notranslate"><span class="pre">target_lat</span></code> (double), <code class="docutils literal notranslate"><span class="pre">max_dist</span></code> (double) to determine the geo-fencing area. Node 2 has a <code class="docutils literal notranslate"><span class="pre">sensor_log</span></code> (uint8) parameter with a callback attached to trigger the logging of a data point.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># procedure 0 (geo-fencing setup)</span>
+proc<span class="w"> </span>new
+
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>_zero<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># initialize a parameter to compare against</span>
+
+proc<span class="w"> </span>binop<span class="w"> </span>lat<span class="w"> </span>-<span class="w"> </span>target_lat<span class="w"> </span>lat_diff<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># calculate latitude difference</span>
+proc<span class="w"> </span>ifelse<span class="w"> </span>lat_diff<span class="w"> </span>&lt;<span class="w"> </span>_zero<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># negate if negative</span>
+proc<span class="w"> </span>unop<span class="w"> </span>lat_diff<span class="w"> </span>-<span class="w"> </span>lat_diff<span class="w"> </span><span class="m">1</span>
+proc<span class="w"> </span>noop
+
+proc<span class="w"> </span>binop<span class="w"> </span>lon<span class="w"> </span>-<span class="w"> </span>target_lon<span class="w"> </span>lon_diff<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="c1"># calculate longitude difference</span>
+proc<span class="w"> </span>ifelse<span class="w"> </span>lon_diff<span class="w"> </span>&lt;<span class="w"> </span>_zero<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># negate if negative</span>
+proc<span class="w"> </span>unop<span class="w"> </span>lon_diff<span class="w"> </span>-<span class="w"> </span>lon_diff<span class="w"> </span><span class="m">1</span>
+proc<span class="w"> </span>noop
+
+proc<span class="w"> </span>binop<span class="w"> </span>lat_diff<span class="w"> </span>+<span class="w"> </span>lon_diff<span class="w"> </span>dist<span class="w"> </span><span class="m">1</span>
+proc<span class="w"> </span>ifelse<span class="w"> </span>dist<span class="w"> </span>&lt;<span class="w"> </span>max_dist<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># check if the vehicle is within range</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>geo_check<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># geo_check signals the vehicle is within the area</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>geo_check<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># geo_check signals the vehicle is outside the area</span>
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="c1"># call itself recursively to keep checking the vehicle&#39;s position</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># push the procedure to slot 0 on node 1</span>
+
+<span class="c1"># procedure 1 (geo-fencing check)</span>
+proc<span class="w"> </span>new
+proc<span class="w"> </span>block<span class="w"> </span>geo_check<span class="w"> </span>!<span class="o">=</span><span class="w"> </span>_zero<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># block until vehicle is within the area</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>sensor_log<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="c1"># log a data point</span>
+<span class="c1"># optionally call itself recursively if the sensor should keep logging data points while the vehicle is in the area</span>
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># push the procedure to slot 1 on node 1</span>
+</pre></div>
+</div>
+<p>Note that the last integer argument in the <code class="docutils literal notranslate"><span class="pre">proc</span></code> commands is the node on which the operands are located. The procedures themselves should be pushed onto the same node hosting a procedure server, which is assumed to be node 1 in this case.</p>
+<p>The following commands can now be executed to set up and run the location-based logging procedure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>node<span class="w"> </span><span class="m">1</span>
+<span class="nb">set</span><span class="w"> </span>target_lat<span class="w"> </span><span class="m">55</span>.6761
+<span class="nb">set</span><span class="w"> </span>target_lon<span class="w"> </span><span class="m">12</span>.5683
+<span class="nb">set</span><span class="w"> </span>max_dist<span class="w"> </span><span class="m">0</span>.01
+proc<span class="w"> </span>run<span class="w"> </span><span class="m">0</span><span class="w">  </span><span class="c1"># Run the procedure to update the geo_check parameter</span>
+proc<span class="w"> </span>run<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># Run the procedure to log data points when the vehicle is within the area</span>
+</pre></div>
+</div>
+<p>One can then imagine an extended scenario where there is e.g. a third node responsible for some actuator that must react based on the sensor node, which adds another layer of coordination to the system - all this can be orchestrated using the DSL!</p>
+<section id="utilizing-reserved-pre-programmable-procedure-slots">
+<h3>Utilizing reserved, pre-programmable procedure slots<a class="headerlink" href="#utilizing-reserved-pre-programmable-procedure-slots" title="Link to this heading"></a></h3>
+<p>There is also support for pre-programmed procedures in reserved slots, which can be used to simplify the DSL code or take care of more complex operations. For example, one can write a function compiled into the application on node 1 that calculates the euclidean distance between points defined by (<code class="docutils literal notranslate"><span class="pre">lat</span></code>, <code class="docutils literal notranslate"><span class="pre">lon</span></code>) and (<code class="docutils literal notranslate"><span class="pre">target_lat</span></code>, <code class="docutils literal notranslate"><span class="pre">target_lon</span></code>) and stores the result in the <code class="docutils literal notranslate"><span class="pre">dist</span></code> parameter. For the sake of example, let’s assumed this procedure is available in slot 0. Then the geo-fencing setup procedure can be simplified as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># procedure 1 (geo-fencing setup)</span>
+proc<span class="w"> </span>new
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># call the pre-programmed procedure to calculate `dist`</span>
+proc<span class="w"> </span>ifelse<span class="w"> </span>dist<span class="w"> </span>&lt;<span class="w"> </span>max_dist<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># check if the vehicle is within range</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>geo_check<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># geo_check signals the vehicle is within the area</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>geo_check<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># geo_check signals the vehicle is outside the area</span>
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># call itself recursively to keep checking the vehicle&#39;s position</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># push the procedure to slot 1 on node 1</span>
+</pre></div>
+</div>
+<p>The (geo-fencing check) procedure can then simply be adjusted to account for the new procedure slot. To demonstrate more functionality, we can do this by running the following slash commands before redefining and pushing the procedure above.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>node<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># set the active node to node 1 for implicit node argument</span>
+
+proc<span class="w"> </span>pull<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># pull the pre-programmed procedure from slot 1</span>
+proc<span class="w"> </span>pop<span class="w">  </span><span class="c1"># remove the last instruction in the procedure</span>
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="c1"># replace the call instruction to point to new slot</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="c1"># push the procedure to slot 2</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="fibonacci-sequence">
+<h2>Fibonacci Sequence<a class="headerlink" href="#fibonacci-sequence" title="Link to this heading"></a></h2>
+<p>While using the DSL to calculate Fibonacci numbers certainly isn’t the intended use of the DSL (nor efficient), it serves as a good example to demonstrate the capabilities of the DSL. The following is a sequence of commands that can be used to calculate the Fibonacci sequence up to the $n$-th term:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># procedure 0 (initialization)</span>
+proc<span class="w"> </span>new
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>_zero<span class="w"> </span><span class="m">0</span><span class="w">  </span><span class="c1"># initialize the _zero parameter</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>rx0<span class="w"> </span><span class="m">0</span><span class="w">  </span><span class="c1"># initialize register 0 to hold the n-th term</span>
+proc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>rx1<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># initialize register 1 to hold the (n+1)-th term</span>
+proc<span class="w"> </span>ifelse<span class="w"> </span>n<span class="w"> </span>&gt;<span class="w"> </span>_zero<span class="w">  </span><span class="c1"># only work to do if n &gt; 0</span>
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># call procedure 1, defined below</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">0</span><span class="w">  </span><span class="c1"># push the procedure to slot 0</span>
+
+<span class="c1"># procedure 1 (calculation)</span>
+proc<span class="w"> </span>new
+proc<span class="w"> </span>binop<span class="w"> </span>rx0<span class="w"> </span>+<span class="w"> </span>rx1<span class="w"> </span>rx2<span class="w">  </span><span class="c1"># calculate the (n+2)-th term</span>
+proc<span class="w"> </span>unop<span class="w"> </span>rx1<span class="w"> </span>idt<span class="w"> </span>rx0<span class="w">  </span><span class="c1"># shift the registers one term with identity operator</span>
+proc<span class="w"> </span>unop<span class="w"> </span>rx2<span class="w"> </span>idt<span class="w"> </span>rx1
+proc<span class="w"> </span>unop<span class="w"> </span>n<span class="w"> </span>--<span class="w"> </span>n<span class="w">  </span><span class="c1"># decrement n</span>
+proc<span class="w"> </span>ifelse<span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>_zero
+proc<span class="w"> </span>noop<span class="w">  </span><span class="c1"># if-clause: condition is met</span>
+proc<span class="w"> </span>call<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># else-clause: condition is not met (recurse in this case)</span>
+
+proc<span class="w"> </span>push<span class="w"> </span><span class="m">1</span><span class="w">  </span><span class="c1"># push the procedure to slot 1</span>
+</pre></div>
+</div>
+<p>E.g. to calculate the 10th term of the Fibonacci sequence, the following commands can now be executed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="w"> </span>n<span class="w"> </span><span class="m">10</span>
+proc<span class="w"> </span>run<span class="w"> </span><span class="m">0</span>
+</pre></div>
+</div>
+<p>After which the 10th term of the Fibonacci sequence can be read from the <code class="docutils literal notranslate"><span class="pre">rx0</span></code> register (which is really just the <code class="docutils literal notranslate"><span class="pre">rx0</span></code> libparam parameter).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>get<span class="w"> </span>rx0
+</pre></div>
+</div>
+<p>Naturally, this assumes <code class="docutils literal notranslate"><span class="pre">n</span></code>, <code class="docutils literal notranslate"><span class="pre">_zero</span></code>, <code class="docutils literal notranslate"><span class="pre">rx0</span></code>, <code class="docutils literal notranslate"><span class="pre">rx1</span></code>, and <code class="docutils literal notranslate"><span class="pre">rx2</span></code> are available as integer libparam parameters on the node. Also note that with the default FreeRTOS/POSIX-based runtimes, it is recommended to divide complex routines into small units of work, where any calls to other procedures are done in the last instruction (or second-last if preceded by ifelse) to avoid nesting function calls.</p>
+</section>
+</section>
+<section id="build-environment">
+<h1>Build Environment<a class="headerlink" href="#build-environment" title="Link to this heading"></a></h1>
+<p>Refer to the Dockerfile for a reference build environment, including code formatter. It can be brought up like so:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>csp_proc<span class="w"> </span>.
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>csp_proc
+</pre></div>
+</div>
+<p>E.g. the following command will run the test suite:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>csp_proc<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>csp_proc<span class="w"> </span>meson<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-C<span class="w"> </span>builddir<span class="w"> </span>--verbose
+</pre></div>
+</div>
+</section>
+<section id="license">
+<h1>License<a class="headerlink" href="#license" title="Link to this heading"></a></h1>
+<p>This project is licensed under the terms of the MIT license. The full license text is available in the <a class="reference download internal" download="" href="../../../_downloads/3ce011f7ecc935c644467df404f75f55/LICENSE"><span class="xref download myst">LICENSE</span></a> file.</p>
+<p>The MIT license is a short, permissive license. It lets people do almost anything they want with the provided code as long as they provide attribution back to the author and don’t hold the author liable.</p>
+<p>For more information about this license, you can visit <a class="reference external" href="https://opensource.org/licenses/MIT">https://opensource.org/licenses/MIT</a>.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

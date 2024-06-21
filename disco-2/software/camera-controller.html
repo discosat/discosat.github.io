@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camera Controller &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Application/System manager (Linux system calls over CSP)" href="app-sys-manager.html" />
+    <link rel="prev" title="Image Processing Pipeline" href="image-processing-pipeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Disco 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../terms-and-abbreviations.html">Terms and Abbreviations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Software</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="system-setup.html">System setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Camera Controller</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#capturing-images">Capturing images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#building">Building</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#error-log">Error log</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="app-sys-manager.html">Application/System manager (Linux system calls over CSP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cortex-m7.html">Cortex-M7 (low-power core)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flight-planning-csp-proc.html">Flight planning (<cite>csp_proc</cite>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Disco 2</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Software</a></li>
+      <li class="breadcrumb-item active">Camera Controller</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/disco-2/software/camera-controller.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="camera-controller">
+<h1>Camera Controller<a class="headerlink" href="#camera-controller" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://github.com/ivaroli/DiscoCameraController">The Disco-2 camera controller</a> is a controller that controls the visible and IR light cameras onboard the Disco-2 payload. It’s purpose is to fetch raw image data from the camera sensors and pass them to the image processing pipeline (DIPP). It interfaces with the processing pipeline over System V message queue and shared memory, and it exposes a parameter with libparam over CSP that allows sending of image capture instructions.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<section id="image-data">
+<h3>Image data<a class="headerlink" href="#image-data" title="Link to this heading"></a></h3>
+<p>When the camera captures an image from the visible light cameras, the controller captures the raw <strong>BayerRG</strong> data from the camera sensor. The controller then packages the data into a <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*data</span></code> array. It also prepends a 4 byte integer in front of the image data, indicating the size of the image. A diagram representing the data generated from a single image is below:</p>
+<p><img alt="Data reprisentation of a single image" src="../../_images/image_data_content.drawio.png" /></p>
+<p>The camera can also capture a burst of images. This burst of images will be packaged together into a single batch that will be sent to the image processing pipeline.</p>
+<p><img alt="Data reprisentation of a burst of images" src="../../_images/image_batch.drawio.png" /></p>
+<p>The image processing pipeline and the camera communicate using <a class="reference external" href="https://docs.oracle.com/cd/E19683-01/816-5042/svipc-41256/index.html">System V Shared Memory</a> and a <a class="reference external" href="https://docs.oracle.com/cd/E19683-01/816-5042/svipc-23310/index.html">System V Message Queue</a>. When the camera captures a burst of images, it generates a shared memory segment and inserts the image data into it. Afterwards, the camera controller sends a System V message queue message to the image processing pipeline to signal that the images are ready for processing. Upon receiving this message, the processing pipeline retrieves the images from the shared memory segment before deallocating it. The message queue message is structured as a defined struct, as shown below.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ImageBatch</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">mtype</span><span class="p">;</span><span class="w">          </span><span class="cm">/* message type to read from the message queue */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">height</span><span class="p">;</span><span class="w">          </span><span class="cm">/* height of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">width</span><span class="p">;</span><span class="w">           </span><span class="cm">/* width of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">channels</span><span class="p">;</span><span class="w">        </span><span class="cm">/* channels of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">num_images</span><span class="p">;</span><span class="w">      </span><span class="cm">/* amount of images */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">batch_size</span><span class="p">;</span><span class="w">      </span><span class="cm">/* size of the entire image batch of data */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">shm_key</span><span class="p">;</span><span class="w">         </span><span class="cm">/* key to shared memory segment of image data */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">pipeline_id</span><span class="p">;</span><span class="w">     </span><span class="cm">/* id of pipeline to utilize for processing */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">;</span><span class="w"> </span><span class="cm">/* address to image data (in shared memory) */</span>
+<span class="p">}</span><span class="w"> </span><span class="n">ImageBatch</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Below is a sequence diagram illustrating the entire process of capturing images and delivering them to the processing pipeline:</p>
+<p><img alt="Sequecne diagram of capturing images and delivering them to the processing pipeline" src="../../_images/camera_sequence_diagram.drawio.png" /></p>
+</section>
+<section id="visible-light-sensor-data">
+<h3>Visible light sensor data<a class="headerlink" href="#visible-light-sensor-data" title="Link to this heading"></a></h3>
+<p>The camera controller captures raw data from the visible light image sensors in a BayerRG format with a 12-bit pixel depth. In this format, every two bytes in the image data represent a single R, G, or B pixel. This approach is taken to grant the image processing pipeline greater control over image processing. Below is a visual representation of the BayerRG pixel format.</p>
+<p><img alt="Sequence diagram of capturing images and delivering them to the processing pipeline" src="../../_images/pixel-formats-raw.png" /></p>
+</section>
+<section id="ir-light-sensor-data">
+<h3>IR light sensor data<a class="headerlink" href="#ir-light-sensor-data" title="Link to this heading"></a></h3>
+<p><strong>Undecided</strong></p>
+</section>
+</section>
+<section id="capturing-images">
+<h2>Capturing images<a class="headerlink" href="#capturing-images" title="Link to this heading"></a></h2>
+<p>The camera controller exposes a CSP parameter through <a class="reference external" href="https://github.com/spaceinventor/libparam">libparam</a>, called <code class="docutils literal notranslate"><span class="pre">capture_param</span></code>. This parameter is a semi-colon seperated string of values describing the image capture. An example of a CSH command setting this parameter is below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="n">capture_param</span> <span class="s2">&quot;CAMERA_TYPE=VMB;CAMERA_ID=1800 U-2040c;NUM_IMAGES=10;EXPOSURE=55000;ISO=0;INTERVAL=55000;&quot;</span>
+</pre></div>
+</div>
+<p>The possible values that can be set are the following.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CAMERA_ID</p></td>
+<td><p>string</p></td>
+<td><p>1800 U-2040c</p></td>
+<td><p>The model of the camera to capture with</p></td>
+<td><p>True</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-odd"><td><p>CAMERA_TYPE</p></td>
+<td><p>string</p></td>
+<td><p>VMB</p></td>
+<td><p>The camera type to capture with</p></td>
+<td><p>FALSE</p></td>
+<td><p>VMB</p></td>
+</tr>
+<tr class="row-even"><td><p>EXPOSURE</p></td>
+<td><p>int</p></td>
+<td><p>55000</p></td>
+<td><p>Exposure in microseconds</p></td>
+<td><p>False</p></td>
+<td><p>If not set, then exposure is estimated</p></td>
+</tr>
+<tr class="row-odd"><td><p>ISO</p></td>
+<td><p>double</p></td>
+<td><p>1.0</p></td>
+<td><p>ISO or gain</p></td>
+<td><p>False</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>NUM_IMAGES</p></td>
+<td><p>int</p></td>
+<td><p>10</p></td>
+<td><p>Number of images to capture</p></td>
+<td><p>False</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>INTERVAL</p></td>
+<td><p>int</p></td>
+<td><p>0</p></td>
+<td><p>Delay between images in microseconds (not including exposure)</p></td>
+<td><p>False</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="building">
+<h2>Building<a class="headerlink" href="#building" title="Link to this heading"></a></h2>
+<p>The Camera controller is built with the Meson build system. A build script is included in the <a class="reference external" href="https://github.com/ivaroli/DiscoCameraController">github repository</a>. Simply call <code class="docutils literal notranslate"><span class="pre">./configure.sh</span></code> and the controller will be built.</p>
+</section>
+<section id="error-log">
+<h2>Error log<a class="headerlink" href="#error-log" title="Link to this heading"></a></h2>
+<p>The camera controller provides an integer parameter via the CSP parameter named error_log, denoting the latest cause of failure encountered during image capture. Refer to the table below for the list of potential error codes along with their respective explanations.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Error Code</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>Success</p></td>
+</tr>
+<tr class="row-odd"><td><p>100</p></td>
+<td><p>General error in parsing of capture instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>101</p></td>
+<td><p>Invalid camera type or camera type implementation missing</p></td>
+</tr>
+<tr class="row-odd"><td><p>102</p></td>
+<td><p>CAMERA_ID is missing from capture instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>103</p></td>
+<td><p>NUM_IMAGES to capture is 0</p></td>
+</tr>
+<tr class="row-odd"><td><p>200</p></td>
+<td><p>General error during image capture</p></td>
+</tr>
+<tr class="row-even"><td><p>201</p></td>
+<td><p>No cameras connected or found</p></td>
+</tr>
+<tr class="row-odd"><td><p>202</p></td>
+<td><p>Camera with id CAMERA_ID not found</p></td>
+</tr>
+<tr class="row-even"><td><p>300</p></td>
+<td><p>General error in message queue</p></td>
+</tr>
+<tr class="row-odd"><td><p>301</p></td>
+<td><p>Unable to create shared memory space</p></td>
+</tr>
+<tr class="row-even"><td><p>302</p></td>
+<td><p>Unable to insert data into memory space</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="image-processing-pipeline.html" class="btn btn-neutral float-left" title="Image Processing Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="app-sys-manager.html" class="btn btn-neutral float-right" title="Application/System manager (Linux system calls over CSP)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

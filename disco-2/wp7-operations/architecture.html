@@ -1,0 +1,167 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System architecture &mdash; Discosat 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Discosat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Disco 2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../terms-and-abbreviations.html">Terms and Abbreviations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../software/index.html">Software</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Operations (WP7)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">System architecture</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#access-control">Access control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ground-station">Ground station</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui-operations-front-end">UI / Operations Front-end</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="development.html">SatOP Development</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Discosat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Disco 2</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Operations (WP7)</a></li>
+      <li class="breadcrumb-item active">System architecture</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/disco-2/wp7-operations/architecture.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="system-architecture">
+<h1>System architecture<a class="headerlink" href="#system-architecture" title="Link to this heading"></a></h1>
+<p>The platform has been designed for satellite missions, focusing on making it general and adaptable to different use cases. Thus, the design consists of</p>
+<ul class="simple">
+<li><p><strong>Core framework</strong>:
+The core of the platform, that bootstraps and loads everything else is part of the core framework.</p></li>
+<li><p><strong>Components</strong>:
+Functionality and business logic that are generally applicable for a wide range of different satellite missions and the platform itself are built as components, that can be more tightly integrated.</p></li>
+<li><p><strong>Plugins</strong>:
+The functionality that should be easily replaceable without risk of breaking the platform is developed as the more loosely coupled plugins. It would generally be that all mission specific logic is developed as plugins.</p></li>
+</ul>
+<p><img alt="architecture" src="../../_images/arch-platform.svg" /></p>
+<p>The plugins are meant to contain mission-specific and more isolated bits of logic. These should more or less be developed and function independently, but inter-plugin dependencies is possible.</p>
+<p>Plugins can rely on messaging from the platform of various stages of the life-cycle, e.g. startup and shutdown, to perform required actions such as initating or cleaning up database connections.</p>
+<section id="access-control">
+<h2>Access control<a class="headerlink" href="#access-control" title="Link to this heading"></a></h2>
+<section id="authorization">
+<h3>Authorization<a class="headerlink" href="#authorization" title="Link to this heading"></a></h3>
+<p>The platform contains an authorization component, which ensures that a given user or system (collectively referred to as <em>entities</em>) has the rights to do what they are attempting with the API.</p>
+</section>
+<section id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Link to this heading"></a></h3>
+<p>While authorization is implemented as a core component, the authentication systems could potentially be more dynamic depending on the environment it is deployed in. Thus the authentication (login) logic is implemented as plugins, which allows for interfacing with various user backends or developing one.</p>
+<p>We have developed the following</p>
+<ol class="arabic simple">
+<li><p>Password authentication allows users to login using an email and a password.</p></li>
+<li><p>API key allows connecting systems to use an API key to receive an access token.</p></li>
+</ol>
+<p>with the intent of also creating one that authenticates against WAYF.</p>
+<p>The authentication flow works as shown here:
+<img alt="Authentication flow" src="../../_images/simple_login.svg" /></p>
+<p>The user first authenticates agains the identity provider plugin, which after validation is able to look up the UUID of the user and request an access token for them.</p>
+</section>
+</section>
+<section id="ground-station">
+<h2>Ground station<a class="headerlink" href="#ground-station" title="Link to this heading"></a></h2>
+<p>Ground stations connects to the platform as well. With this connection, they open a WebSocket connection which the platform can use to send commands/requests directly to the ground station.</p>
+<p>A SatOP Client on the ground station is responsible for handling the requests coming from the platform, i.e. scheduling observations, tracking a satellite with the antenna, turn on radios, transmit/receive messages.</p>
+</section>
+<section id="ui-operations-front-end">
+<h2>UI / Operations Front-end<a class="headerlink" href="#ui-operations-front-end" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Discosat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

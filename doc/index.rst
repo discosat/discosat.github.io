@@ -7,7 +7,7 @@ Discosat Documentation
 ======================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: Contents:
 
    disco-1/index.rst

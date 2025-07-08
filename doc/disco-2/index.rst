@@ -3,6 +3,7 @@ Disco 2
 =======
 
 .. toctree::
+  terms-and-abbreviations.rst
   software/index.rst
   wp7-operations/index.rst
 ..
